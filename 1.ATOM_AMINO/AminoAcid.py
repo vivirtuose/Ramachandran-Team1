@@ -1,18 +1,13 @@
-import Atom
 
 
-class AminoAcid(Atom) : 
+class AminoAcid : 
 
-  def __init__(self, name, px, py, pz, res_number, res_type, list_atoms):
-    super.__init__(name, px, py, pz)
+  def __init__(self, res_number, res_type, list_atoms = []):
     self._res_number = res_number
     self._res_type = res_type
-    self._atoms = list_atoms
+    self._atoms = list_atoms 
 
     if len(self._res_type) != 3 : 
-      raise ValueError
-
-    if len(self._atoms) == 0 : 
       raise ValueError
 
 
@@ -48,26 +43,41 @@ class AminoAcid(Atom) :
     """
     Function that adds a new atom in the list of atoms for the current residue
     """
-    
-  def get_N(self):
+    self.atoms.append(atom)
+
+
+  @property 
+  def N(self):
     """
     Function that returns an Atom corresponding to the N of the current residue
     """
+    return(atom for atom in self.atoms if atom.name == "N")
 
-  def get_CA(self):
+
+  @property
+  def CA(self):
     """
     Function that returns an Atom corresponding to the CA of the current residue
-    """      
+    """     
+    return(atom for atom in self.atoms if atom.name == "CA") 
 
-  def get_C(self):
+
+  @property
+  def C(self):
     """
     Function that returns an Atom corresponding to the C of the current residue
-    """  	
+    """  
+    return(atom for atom in self.atoms if atom.name == "C") 	
+  
 
-  def get_O(self):
+  @property
+  def O(self):
     """
     Function that returns an Atom corresponding to the O of the current residue
     """
+    return(atom for atom in self.atoms if atom.name == "O") 
+
+
 
 if __name__ == "__main__" : 
   a1 = AminoAcid(1, "MET", ["N", "C", "C", "O", "C"])

@@ -14,7 +14,7 @@ class Atom:
       self._y = py  
       self._z = pz
     
-    @property
+    @property #name
     def name(self):
       """
       Function that returns the name of the atom as a string
@@ -28,7 +28,7 @@ class Atom:
         """
         self._name = pname
     
-    @property
+    @property #coordinate
     def coords(self):
         """
         Function that returns a list containing the coordinates (x,y,z)
@@ -43,41 +43,43 @@ class Atom:
         self._x,self._y,self._z = values
 
 
-    @property  
+    @property  #x coordinate
     def x(self):
         """
         Function that returns the x coordinate
         """
         return self._x
-    
+
     @x.setter
     def x(self,px):
         """
         Function that modifies the x coordinate
         """
         self._x=px
+
         
-    @property
+    @property #y coordinate
     def y(self):
         """
         Function that returns the y coordinate
         """
         return self._y
-    
+
     @y.setter
     def y(self,py):
        """
         Function that modifies the y coordinate
         """
        self._y=py
+
     
-    @property
+    @property #z coordinate
     def z(self):
         """
         Function that returns the z coordinate
         """
         return(self._z)
-    
+
     @z.setter
     def z(self,pz):
         """
@@ -93,53 +95,56 @@ class Atom:
         another_atom.name=self.name
         another_atom.coords = self.coords
         return another_atom    
+
   
     def __str__(self):
+      """
+      Function that return the str representation of an atom
+      """
       return f"{self.name} ({self.x:.2f}, {self.y:.2f}, {self.z:.2f})"
-    
+
     
     def norm(self):
       """
       Function that computes the norm of the vector from O to the current instance
       """
-      current_coord=self.coords
-      norm = sqrt((current_coord[0])**2+(current_coord[1])**2+(current_coord[2])**2)
-      return norm
-    
+      return sqrt((self.x)**2 + (self.y)**2 + (self.z)**2)
+
     
     def distance(self, another_atom):
         """
         Function that computes the distance between the current instance and another atom
         """
-        current_coord=self.coords
-        other_coord=another_atom.coords
-        norm = sqrt((current_coord[0]-other_coord[0])**2+(current_coord[1]-other_coord[1])**2+(current_coord[2]-other_coord[2])**2)
-        return norm
+        return sqrt((self.x - another_atom.x)**2 + (self.y-another_atom.y)**2 + (self.z - another_atom.z))
+
 
     def substract(self, another_atom):
         """
         Function that computes the substraction between the current atom and the other atom passed as a parameter, and returns it as a new Atom with an empty name.
         """
+        return Atom("", self.x - another_atom.x, self.y - another_atom.y, self.z - another_atom.z)
 
     
     def dot_product(self, another_atom):
         """
         Function that computes the dot product between the current atom and the other atom passed as a parameter, and returns it as a float
         """
-        A1_coords = self.coords
-        A2_coords = another_atom.coords
-        res=float(A1_coords[0]*A2_coords[0]+A1_coords[1]*A2_coords[1]+A1_coords[2]*A2_coords[2])
-        return res
+        return float(self.x*another_atom.x + self.y*another_atom.y + self.z*another_atom.z)
+
 
     def cross_product(self, another_atom):
         """
         Function that computes the cross product between the current atom and the other atom passed as a parameter, and returns it as a new Atom with an empty name.
         """
-      
+        x = (self.y*another_atom.z) - (self.z*another_atom.y)
+        y = (self.z*another_atom.x) - (self.x*another_atom.z)
+        z = (self.x*another_atom.y) - (self.y*another_atom.x)
+        return Atom("",x,y,z)
+
       
     def angle(self, another_atom):
         return(self.dot_product(another_atom)/(self.norm()*another_atom.norm()))
-    
+
 
     def dihedral(a1, a2, a3, a4):
         """
@@ -152,6 +157,6 @@ if __name__ == "__main__":
   atom2 = Atom("C",18.0,9.5,0)
   atom3 = Atom("O",0,0,1)
     
-  print(atom1)
+  print(atom1.dot_product(atom2))
   print(atom2)
   print(atom3)
