@@ -25,8 +25,10 @@ class StructurePDB:
       #On ne s'intéresse qu'aux lignes ATOM
       if line[0:4] != "ATOM":
         continue
+
       
       atom_type = line[12:17].strip()
+      #On ne s'intéresse qu'aux atomes N, CA, C et O car squelette des aa, pour calcul des angles 
       if atom_type not in ["N","CA","C","O"]:
         continue
       
@@ -34,13 +36,14 @@ class StructurePDB:
       
       if (residue_type != previous_res_type):
         aa = AminoAcid(residue_type, [])
-        self.residues.append(aa)
+        self.residues.append(aa) #on ajoute un objet AminoAcid à la liste de résidus, avec le type de résidu et une liste vide qui contiendra les atomes et leurs coordonnées
         previous_res_type = residue_type
-      
+
+      #On stocke les coordonnées
       coordX = float(line[32:39].strip())
       coordY = float(line[41:46].strip())
       coordZ = float(line[49:54].strip())
-      atom = Atom(atom_type, coordX, coordY, coordZ)
+      atom = Atom(atom_type, coordX, coordY, coordZ) #objet Atom créé, ajouté à l'objet AminoAcid correspondant
 
       self.residues[-1].add(atom)
 
@@ -52,6 +55,21 @@ class StructurePDB:
     phi = [] # list of floats
     psi = [] # list of floats
     self.phipsi = [] # list of Points (class Point...)
+
+    for ires in range(len(self.residues)):
+      current_aa = self.residues[ires]
+      for iaa in range(len(current_aa)):
+        list_atoms = current_aa[iaa].atom
+
+    #On parcours les atomes de chaque aa
+    for iat in range(len(list_atoms)-1):
+      if list_atoms[iat].name == "N"and list_atoms[iat].name == "CA":
+        pass
+      #calcul angle phi
+
+
+
+
 	
     phi.append(0.00)
     
