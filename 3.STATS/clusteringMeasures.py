@@ -9,26 +9,27 @@ Deux critères de qualité seront implémentées :
     - Coefficient de Silhouette pour évaluer la qualité d'une partition ;
     - L'indice de Dunn pour évaluer les algorithmes de clustering.
 """
+import ClusterPoint
 from pathlib import Path 
 
 class ClusteringMeasures(ClusterPoint) :
 
     # Constructeur(self, attributs...)
-    def __init__(self, cluster_point : list | str | Path) :
+    def __init__(self, cluster_point_list : list | str | Path) :
 
-        self.cluster_point = cluster_point # On vérifie dans le setter qu'on a bien une liste en entrée
+        self.cluster_point_list = cluster_point_list # On vérifie dans le setter qu'on a bien une liste en entrée
 
     @property
-    def cluster_point(self) :
-        return self._cluster_point
+    def cluster_point_list(self) :
+        return self._cluster_point_list
 
-    @cluster_point.setter
-    def cluster_point(self, value) :
+    @cluster_point_list.setter
+    def cluster_point_list(self, value) :
         """
         Vérifie que l'attribut est bien une liste à la fin !
         """
         if isinstance(value, (str, Path)) :
-            self.cluster_point = self._load(value)
+            self.cluster_point_list = self._load(value)
 
     # Méthodes ...
 
