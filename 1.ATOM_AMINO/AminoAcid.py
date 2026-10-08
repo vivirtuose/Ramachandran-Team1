@@ -77,6 +77,10 @@ class AminoAcid :
     """
     return(atom for atom in self.atoms if atom.name == "O") 
 
+  
+  def is_angle_diedre(self) : 
+    pass
+
 
 
 if __name__ == "__main__" : 
