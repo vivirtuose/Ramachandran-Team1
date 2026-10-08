@@ -69,10 +69,10 @@ class StructurePDB:
     b3 = a4.substract(a3) # Vecteur A3 -> A4
 
     # Calcul des deux plans (produit vectoriel avec cross_product)
-    n1 = b1.cross_product(b2)  # Vecteur perpendiculaire au premier plan (A1, A2, A3)
-    n2 = b2.cross_product(b3)  # Vecteur perpendiculaire au second plan (A2, A3, A4)
+    n1 = b1.cross_product(b2) # Vecteur perpendiculaire au premier plan (A1, A2, A3)
+    n2 = b2.cross_product(b3) # Vecteur perpendiculaire au second plan (A2, A3, A4)
 
-    # Calcul des composantesde l'angle pour atan2
+    # Calcul des composantes de l'angle pour atan2
     x = n1.dot_product(n2) #dot_product = produit scalaire
     #x mesure le cosinus de l'angle entre les deux plans.
     y = n1.cross_product(n2).dot_product(b2) / b2.norm() #norm = norme du vecteur
@@ -84,7 +84,10 @@ class StructurePDB:
 
   def _get_atom_by_name(self, aa, name):
     """Permet de récupérer un atome spécifique dans un résidu"""
-    pass
+    for atom in aa.atoms:
+      if atom.name == name:
+        return atom
+    return None
 
   def compute_dihedrals(self):
     """
@@ -92,7 +95,7 @@ class StructurePDB:
     """
 
     #BROUILLON !!
-    
+
     phi = [] # list of floats
     psi = [] # list of floats
     self.phipsi = [] # list of Points (class Point...)
