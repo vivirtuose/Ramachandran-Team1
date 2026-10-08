@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from math import atan2, sqrt
+
 from AminoAcid import AminoAcid
 from Atom import Atom
 from Point import Point
@@ -54,10 +57,42 @@ class StructurePDB:
 
   def calculate_dihedrals(self, a1, a2, a3, a4):
     """
-    Functions that computes dihedral angles
-
     Calcule l'angle dièdre (en radians) défini par 4 atomes (a1, a2, a3, a4).
+
+    L'angle dièdre est l'angle de torsion entre le plan formé par les 3 premiers atomes A1 A2 A3 et le plan formé par les 3 derniers A2, A3, A4.
+
+    S'appuie sur les fonctions définies dans la classe Atom.
     """
+    # Calcule des vecteurs entre les atomes (qui les relient entre eux)
+    b1 = a2.substract(a1) # Vecteur A1 -> A2
+    b2 = a3.substract(a2) # Vecteur A2 -> A3
+    b3 = a4.substract(a3) # Vecteur A3 -> A4
+
+    # Calcul des deux plans (produit vectoriel avec cross_product)
+    n1 = b1.cross_product(b2)  # Vecteur perpendiculaire au premier plan (A1, A2, A3)
+    n2 = b2.cross_product(b3)  # Vecteur perpendiculaire au second plan (A2, A3, A4)
+
+    # Calcul des composantesde l'angle pour atan2
+    x = n1.dot_product(n2) #dot_product = produit scalaire
+    #x mesure le cosinus de l'angle entre les deux plans.
+    y = n1.cross_product(n2).dot_product(b2) / b2.norm() #norm = norme du vecteur
+    #y mesure le sinus
+
+    return -atan2(y, x)
+   #Atan2 calcule l'angle exact (en radians à partir de ses composantes x et y, en gérant automatiquement le bon quadrant et le signe de la rotation. 
+   #Le signe négatif permet de respecter la convention de sens utilisée en biochimie structurale.
+
+  def _get_atom_by_name(self, aa, name):
+    """Permet de récupérer un atome spécifique dans un résidu"""
+    pass
+
+  def compute_dihedrals(self):
+    """
+    Calcule les angles dièdres phi et psi pour chaque résidu et stocke les couples dans self.phipsi sous forme de Point(phi, psi).
+    """
+
+    #BROUILLON !!
+    
     phi = [] # list of floats
     psi = [] # list of floats
     self.phipsi = [] # list of Points (class Point...)
@@ -73,10 +108,6 @@ class StructurePDB:
         pass
       #calcul angle phi
 
-
-
-
-	
     phi.append(0.00)
     
     aa = self.residues[0]
