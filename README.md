@@ -74,8 +74,8 @@ Ramachandran-Team1/
 
 | Script | Classes | Rôle |
 |---|---|---|
-| `clustering.py` | `ClusterPoint`, `ClusteringMethods`, `Kmeans`, `dbscan` | `ClusterPoint` est un `Point` qui porte en plus un numéro de cluster. `ClusteringMethods` est la classe abstraite commune. `Kmeans` regroupe les points autour de k centroïdes. `dbscan` regroupe les points selon leur densité et laisse les points isolés en dehors des clusters (bruit). Les résultats peuvent s'exporter en fichier tabulé à trois colonnes (phi, psi, cluster). |
-| `clusteringMeasures.py` | `ClusteringMeasures` | Mesures de qualité d'un clustering : coefficient de silhouette et indice de Dunn. Se construit à partir d'une liste de `ClusterPoint` ou d'un fichier tabulé. |
+| `clustering.py` | `ClusterPoint`, `ClusteringMethods`, `Kmeans`, `dbscan` | `ClusterPoint` est un `Point` qui porte en plus un numéro de cluster. `ClusteringMethods` est la classe abstraite commune. `Kmeans(liste_point, k)` regroupe les points autour de k centroïdes ; `dbscan(liste_point, eps, nb_point)` les regroupe selon leur densité et laisse les points isolés en dehors des clusters (bruit). Les deux se lancent avec `run()`. Le résultat est dans `liste_k` : un dictionnaire {numéro de cluster: points} pour `Kmeans`, une liste de listes de numéros de points pour `dbscan` (qui travaille sur des listes `[x, y]`). Les résultats peuvent s'exporter en fichier tabulé à trois colonnes (phi, psi, cluster). |
+| `clusteringMeasures.py` | `ClusteringMeasures` | Mesures de qualité d'un clustering : coefficient de silhouette (`coeff_silhouette()`) et indice de Dunn (`indice_dunn()`). Se construit à partir d'une liste de `ClusterPoint` ou d'un fichier tabulé (`load`). Les deux mesures demandent au moins 2 clusters. |
 | `angle_1TEY_small_clust.txt` | | Petit fichier d'exemple : un point par ligne, avec phi, psi et le numéro de cluster séparés par des tabulations. |
 
 ### 4.TEST
@@ -110,26 +110,45 @@ Sur `1tey_model1.pdb` (156 résidus), le code doit produire :
 - Une **évaluation de la qualité** : un coefficient de silhouette compris entre -1
   (mauvaise classification) et 1 (bonne classification), et un indice de Dunn d'autant
   plus grand que les clusters sont compacts et bien séparés. Ces mesures servent à
-  comparer les algorithmes et à choisir le nombre de clusters.
+  comparer les algorithmes et à choisir le nombre de clusters. Comme K-means démarre de
+  points tirés au hasard, ces valeurs changent un peu d'une exécution à l'autre.
 
 ## Utilisation
 
-Exemple : de la lecture du PDB au clustering.
+Exemple : de la lecture du PDB jusqu'à l'évaluation du clustering.
 
 ```python
 import sys
 sys.path.extend(["1.ATOM_AMINO", "2.PDB_STRUCT", "3.STATS"])
 
 from PDBStructure import StructurePDB
-from clustering import Kmeans
+from clustering import Kmeans, dbscan, ClusterPoint
+from clusteringMeasures import ClusteringMeasures
 
+# 1. Angles phi / psi
 structure = StructurePDB("1tey_model1.pdb")
 structure.compute_dihedrals()                 # remplit la liste des Point (phi, psi)
 structure.write_dihedrals("angles.txt")       # écrit les angles dans un fichier
 
-modele = Kmeans(structure._phipsi, 3)         # 3 groupes
+# 2. Clustering avec K-means (3 groupes)
+modele = Kmeans(structure._phipsi, 3)
 modele.run()
 print(modele.liste_k)                         # {numéro de cluster: liste de Point}
+
+# 3. Qualité du clustering
+points = []
+for numero, groupe in modele.liste_k.items():
+    for p in groupe:
+        points.append(ClusterPoint(p.x, p.y, numero))
+mesures = ClusteringMeasures(points)
+print(mesures.coeff_silhouette())             # entre -1 et 1
+print(mesures.indice_dunn())                  # plus il est grand, mieux c'est
+
+# 4. Clustering avec DBSCAN (eps = 0.3, au moins 4 voisins)
+listes = [[p.x, p.y] for p in structure._phipsi]
+dbs = dbscan(listes, 0.3, 4)
+dbs.run()
+print(dbs.liste_k)                            # liste de clusters (numéros de points)
 ```
 
 ## Lancer les tests
