@@ -9,13 +9,15 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from clustering_KMeans import ClusterPoint
+import clustering
+from clustering import ClusterPoint
 
-# TEMPORARY WORKAROUND: clusteringMeasures.py starts with "import ClusterPoint", but
-# there is no file ClusterPoint.py (the class is in clustering_KMeans.py). Until the
-# import is fixed in clusteringMeasures.py, we register the class under that name so
-# the file can be imported. Remove these two lines once the import is fixed.
-sys.modules["ClusterPoint"] = ClusterPoint
+# TEMPORARY WORKAROUND: clusteringMeasures.py still starts with
+# "from clustering_KMeans import ClusterPoint", but ClusterPoint now lives in
+# clustering.py. Until that import is updated in clusteringMeasures.py, we make the
+# old module name point to clustering.py so the file can be imported with the
+# same ClusterPoint class. Remove the next line once the import is updated.
+sys.modules["clustering_KMeans"] = clustering
 
 from clusteringMeasures import ClusteringMeasures
 

@@ -1,6 +1,6 @@
 import unittest
 from Point import Point
-from clustering_KMeans import ClusterPoint
+from clustering import ClusterPoint
 
 
 class Test_Point(unittest.TestCase):
