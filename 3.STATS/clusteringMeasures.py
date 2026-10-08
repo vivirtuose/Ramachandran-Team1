@@ -6,19 +6,20 @@ Partie VI du projet : Mesures de qualité et de stabilité de clustering
 
 Deux critères de qualité seront implémentées : 
 
-    - Coefficient de Silhouette pour évaluer la qualité d'une partition ;
+    - Coefficient de Silhouette pour évaluer la qualité d'une répartition ;
     - L'indice de Dunn pour évaluer les algorithmes de clustering.
 """
 import ClusterPoint
 from pathlib import Path 
 
-class ClusteringMeasures(ClusterPoint) :
+class ClusteringMeasures() :
 
-    # Constructeur(self, attributs...)
+    # -- Constructeur(self, attributs...) --
     def __init__(self, cluster_point_list : list | str | Path) :
 
         self.cluster_point_list = cluster_point_list # On vérifie dans le setter qu'on a bien une liste en entrée
 
+    # -- Getter et setter --
     @property
     def cluster_point_list(self) :
         return self._cluster_point_list
@@ -31,16 +32,30 @@ class ClusteringMeasures(ClusterPoint) :
         if isinstance(value, (str, Path)) :
             self.cluster_point_list = self._load(value)
 
-    # Méthodes ...
+        else :
+            raise ValueError(f"self.cluster_point_list doit être une liste !")
+        
+        self.cluster_point_list = list(value)
+
+    # -- Méthodes ... --
 
     # Une méthode statique est une méthode qui ne tient pas compte de l'instance (donc pas besoin de self).
     @staticmethod
-    def load(path : str | Path) -> list :
+    def _load(path : str | Path) -> list :
         """
         Lecture d'un fichier pour stocker le contenu dans une liste.
         """
+        points = []
         with open(path, encoding = "utf-8") as fh :
-            fh.read().splitlines()
+            for line in  fh.read().splitlines() : 
+                x, y, cluster = line.split("\t")
+                points.append(ClusterPoint(float(x), float(y), int(cluster)))
+
+        return points
+    
+    @staticmethod
+    def _dist(p, q) -> float :
+        return ((p.x - q.x) ** 2 + (p.y - q.y) ** 2) ** 0.5
 
 
     
