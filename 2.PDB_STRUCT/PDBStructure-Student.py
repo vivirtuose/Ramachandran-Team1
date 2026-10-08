@@ -12,7 +12,7 @@ class StructurePDB:
     self.residues = []
     self.phipsi = [] #Liste d'objets Point (phi, psi)
 
-    previous_res_type = None
+    previous_res_num = None
 
     fd = open(self.path_to_file,'r')
     lines = fd.readlines().strip() #.strip() rajouté pour les \n
@@ -35,13 +35,15 @@ class StructurePDB:
         continue
       
       residue_type = line[17:20].strip() #type de résidu = amino acid
-      
-      if (residue_type != previous_res_type):
-        aa = AminoAcid(residue_type, [])
-        self.residues.append(aa) #on ajoute un objet AminoAcid à la liste de résidus, avec le type de résidu et une liste vide qui contiendra les atomes et leurs coordonnées
-        previous_res_type = residue_type
+      residue_num = int(line[22:26].strip()) #On récupère le numéro du résidu dans le fichier PDB
 
-      #On stocke les coordonnées
+      #Détection d'un nouveau résidu 
+      if residue_num != previous_res_num:
+          aa = AminoAcid(residue_num, residue_type, [])
+          self.residues.append(aa) #on ajoute un objet AminoAcid à la liste de résidus, avec le type de résidu et une liste vide qui contiendra les atomes et leurs coordonnées
+          previous_res_num = residue_num
+
+      #On récupère et stocke les coordonnées
       coordX = float(line[32:39].strip())
       coordY = float(line[41:46].strip())
       coordZ = float(line[49:54].strip())
@@ -50,9 +52,11 @@ class StructurePDB:
       self.residues[-1].add(atom) #on ajoute les objets Atom créés dans la liste de coordonnées des atomes dans le dernier objet AminoAcid (le résidu dont on est entrain de parcourir les atomes)
 
 
-  def compute_dihedrals(self):
+  def calculate_dihedrals(self, a1, a2, a3, a4):
     """
     Functions that computes dihedral angles
+
+    Calcule l'angle dièdre (en radians) défini par 4 atomes (a1, a2, a3, a4).
     """
     phi = [] # list of floats
     psi = [] # list of floats
