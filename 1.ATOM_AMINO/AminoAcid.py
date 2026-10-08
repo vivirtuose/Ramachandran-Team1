@@ -1,4 +1,4 @@
-
+import Atom
 
 class AminoAcid : 
 
@@ -13,7 +13,7 @@ class AminoAcid :
 
   @property
   def res_number(self) : 
-    return self._res_number
+    return self._res_numbera
 
   @res_number.setter 
   def res_number(self, res_number) : 
@@ -43,7 +43,10 @@ class AminoAcid :
     """
     Function that adds a new atom in the list of atoms for the current residue
     """
-    self.atoms.append(atom)
+    if atom.name in ["N", "O", "C", "CA"] : 
+      self.atoms.append(atom)
+    else : 
+      raise ValueError
 
 
   @property 
@@ -51,7 +54,7 @@ class AminoAcid :
     """
     Function that returns an Atom corresponding to the N of the current residue
     """
-    return(atom for atom in self.atoms if atom.name == "N")
+    return(next(atom for atom in self.atoms if atom.name == "N"))
 
 
   @property
@@ -59,7 +62,7 @@ class AminoAcid :
     """
     Function that returns an Atom corresponding to the CA of the current residue
     """     
-    return(atom for atom in self.atoms if atom.name == "CA") 
+    return(next(atom for atom in self.atoms if atom.name == "CA"))
 
 
   @property
@@ -67,7 +70,7 @@ class AminoAcid :
     """
     Function that returns an Atom corresponding to the C of the current residue
     """  
-    return(atom for atom in self.atoms if atom.name == "C") 	
+    return(next(atom for atom in self.atoms if atom.name == "C"))	
   
 
   @property
@@ -75,14 +78,30 @@ class AminoAcid :
     """
     Function that returns an Atom corresponding to the O of the current residue
     """
-    return(atom for atom in self.atoms if atom.name == "O") 
+    return(next(atom for atom in self.atoms if atom.name == "O")) 
 
   
   def is_angle_diedre(self) : 
-    pass
+    """
+    
+    """
+    for atom in self.atoms : 
+      if atom + 3 <= len(self.atoms) : 
+        atom.dihedral(atom + 1, atom + 2, atom + 3)  
 
 
 
 if __name__ == "__main__" : 
-  a1 = AminoAcid(1, "MET", ["N", "C", "C", "O", "C"])
+  atom1 = Atom.Atom("N",18.0,9.5,192.5)
+  atom2 = Atom.Atom("C",18.0,9.5,0)
+  atom3 = Atom.Atom("O",0,0,1)
+  atom4 = Atom.Atom("CA", 0, 0, 1)
+  atom5 = Atom.Atom("D", 0, 0, 1)
+  a1 = AminoAcid(1, "MET", [atom1, atom2, atom3, atom4])
   print(a1)
+  print(a1.C)
+  print(a1.CA)
+  print(a1.N)
+  print(a1.O)
+  # a1.add(atom5)
+  print(a1.is_angle_diedre)
