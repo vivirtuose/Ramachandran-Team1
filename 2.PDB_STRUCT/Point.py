@@ -16,7 +16,7 @@ class Point:
             raise TypeError()
 
     def __str__(self):
-        return f"Point de coordonnées ({self.x:.4f}, {self.y:.4f})"
+        return f"Point of coordinates ({self.x:.4f}, {self.y:.4f})"
 
     # accesseur
     @property
