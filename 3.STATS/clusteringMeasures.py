@@ -1,5 +1,6 @@
 from pathlib import Path 
 from clustering import ClusterPoint
+from copy import copy
 
 class ClusteringMeasures() :
     """
@@ -16,24 +17,24 @@ class ClusteringMeasures() :
     # -- Getter et setter --
     @property
     def cluster_point_list(self) :
-        return self._cluster_point_list
+        return copy(self._cluster_point_list) # On évite de travailler sur la liste originale pour respecter l'encapsulation
 
     @cluster_point_list.setter
-    def cluster_point_list(self, value):
+    def cluster_point_list(self, value) :
         """
         Accepte une liste de ClusterPoint ou un chemin de fichier.
         """
 
-        if isinstance(value, (str, Path)):
+        if isinstance(value, (str, Path)) :
             value = self.load(value)
 
-        if not isinstance(value, list):
+        if not isinstance(value, list) :
             raise TypeError(f"Une liste de ClusterPoint ou un chemin vers un fichier .txt est attendu. (Type actuel : {type(value)})")
         
-        if len(value) == 0:
+        if len(value) == 0 :
             raise ValueError("Il n'y a pas de points à analyser...")
         
-        self._cluster_point_list = value
+        self._cluster_point_list = copy(value)
 
     # -- Méthodes ... --
 
@@ -44,9 +45,9 @@ class ClusteringMeasures() :
         Lecture d'un fichier pour stocker le contenu dans une liste.
         """
         points = []
-        with open(path, encoding="utf-8") as fh:
-            for line in fh.read().splitlines():
-                if line.strip() == "" or line.startswith("phi"):   # S'il y a une ligne vide ou en-tête
+        with open(path, encoding="utf-8") as fh :
+            for line in fh.read().splitlines() :
+                if line.strip() == "" or line.startswith("phi") :   # S'il y a une ligne vide ou en-tête
                     continue
 
                 phi, psi, cluster = line.split("\t")
@@ -55,7 +56,7 @@ class ClusteringMeasures() :
         return points
     
     @staticmethod
-    def dist(p, q) -> float:
+    def dist(p, q) -> float :
         """
         Correspond à d(p, q) du sujet -> distance euclidienne, réutilisée depuis la classe Point.
 
@@ -80,15 +81,15 @@ class ClusteringMeasures() :
             Un dictionnaire avec le numéro de cluster en clé et la liste des ClusterPoint associée en valeur.
         """
         groups = {}
-        for p in self.cluster_point_list:
-            if p.nb_cluster not in groups:   
+        for p in self.cluster_point_list :
+            if p.nb_cluster not in groups :   
                 groups[p.nb_cluster] = []  
 
             groups[p.nb_cluster].append(p)
 
         return groups
 
-    def a(self, p: list) -> float :
+    def a(self, p) -> float :
         """
         Calcule la distance moyenne entre p et les autres points de son cluster (cohésion).
 
@@ -102,12 +103,12 @@ class ClusteringMeasures() :
         groups = self.order_cluster()
         cluster = groups[p.nb_cluster]
 
-        if len(cluster) == 1:
+        if len(cluster) == 1 :
             return 0.0
 
         total = 0
-        for q in cluster:
-            if q is not p:
+        for q in cluster :
+            if q is not p :
                 total += self.dist(p, q)
 
         return total / (len(cluster) - 1)
@@ -124,7 +125,7 @@ class ClusteringMeasures() :
             Un float correspondant à la distance.
         """
         total = 0
-        for q in cluster:
+        for q in cluster :
             total += self.dist(p, q)
 
         return total / len(cluster)
@@ -172,7 +173,7 @@ class ClusteringMeasures() :
 
         return (b - a) / max(a, b)
 
-    def coeff_silhouette(self):
+    def coeff_silhouette(self) :
         """
         Implémentation de la formule du sujet pour le coefficient de Silhouette.
 
@@ -180,7 +181,7 @@ class ClusteringMeasures() :
             Une valeur entre -1 (mauvaise classification) et 1 (bonne classification).
         """
         groups = self.order_cluster()
-        if len(groups) < 2:
+        if len(groups) < 2 :
             raise ValueError("Le coefficient de Silhouette nécessite au moins 2 clusters")
 
         total = 0
@@ -196,7 +197,7 @@ class ClusteringMeasures() :
         return total / len(groups) 
 
     # -- Méthodes relatives à l'Indice de Dunn --
-    def diameter(self, cluster):
+    def diameter(self, cluster) :
         """
         Retourne la distance max entre deux points du cluster.
         """
@@ -211,17 +212,17 @@ class ClusteringMeasures() :
 
         return d_max
 
-    def separation(self, cluster_1, cluster_2):
+    def separation(self, cluster_1, cluster_2) :
         """
         Retourne la plus petite distance en comparant chaque point présent parmi les deux clusters.
         """
-        d_min = 0
+        d_min = None # permet d'éviter d'avoir deux points qui se superposent dans deux clusters différents
 
         for p in cluster_1 :
             for q in cluster_2 :
                 d = self.dist(p, q)
 
-                if d_min == 0 or d < d_min:
+                if d_min is None or d < d_min :
                     d_min = d
 
         return d_min 
@@ -231,28 +232,28 @@ class ClusteringMeasures() :
         groups = self.order_cluster()
         keys = list(groups)
 
-        if len(keys) < 2:
+        if len(keys) < 2 :
             raise ValueError("L'indice de Dunn nécessite d'avoir au moins 2 clusters") # Gestion d'erreurs
 
         # On prend le plus grand diamètre comme dénominateur
         max_diameter = 0
 
-        for k in keys:
+        for k in keys :
             d = self.diameter(groups[k])
             
-            if d > max_diameter:
+            if d > max_diameter :
                 max_diameter = d
 
         # On prend la plus petite séparation entre deux clusters comme numérateur
-        min_separation = 0
-        for i in range(len(keys)):
-            for j in range(i + 1, len(keys)):     
+        min_separation = None
+        for i in range(len(keys)) :
+            for j in range(i + 1, len(keys)) :     
                 s = self.separation(groups[keys[i]], groups[keys[j]])
 
-                if min_separation == 0 or s < min_separation:
+                if min_separation is None or s < min_separation :
                     min_separation = s
 
-        if max_diameter == 0:
+        if max_diameter == 0 :
             raise ValueError("Tous les clusters ont un diamètre nul") # Nouvelle gestion d'erreur pour les tests.
 
         return min_separation / max_diameter
