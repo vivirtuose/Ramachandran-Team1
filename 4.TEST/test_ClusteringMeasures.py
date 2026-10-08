@@ -4,21 +4,11 @@ Tests unitaires et tests d'usage de la classe ClusteringMeasures
 """
 import os
 import shutil
-import sys
 import tempfile
 import unittest
 from pathlib import Path
 
-import clustering
 from clustering import ClusterPoint
-
-# TEMPORARY WORKAROUND: clusteringMeasures.py still starts with
-# "from clustering_KMeans import ClusterPoint", but ClusterPoint now lives in
-# clustering.py. Until that import is updated in clusteringMeasures.py, we make the
-# old module name point to clustering.py so the file can be imported with the
-# same ClusterPoint class. Remove the next line once the import is updated.
-sys.modules["clustering_KMeans"] = clustering
-
 from clusteringMeasures import ClusteringMeasures
 
 
@@ -36,12 +26,12 @@ def make_cluster_points(data):
 
 def compute_silhouette(measures):
     """Renvoie le coefficient de silhouette d'un objet ClusteringMeasures."""
-    return measures.silhouette_coefficient()
+    return measures.coeff_silhouette()
 
 
 def compute_dunn(measures):
     """Renvoie l'indice de Dunn d'un objet ClusteringMeasures."""
-    return measures.dunn_index()
+    return measures.indice_dunn()
 
 
 # Deux clusters compacts et bien separes, sur une ligne :
@@ -131,7 +121,7 @@ class TestClusteringMeasuresConstructor(unittest.TestCase):
 # ---------------------------------------------------------------------------
 
 class TestClusteringMeasuresDistance(unittest.TestCase):
-    """La methode _dist calcule la distance euclidienne entre deux points."""
+    """La methode dist calcule la distance euclidienne entre deux points."""
 
     def test_dist_3_4_5(self):
         """
@@ -140,14 +130,14 @@ class TestClusteringMeasuresDistance(unittest.TestCase):
         """
         p = ClusterPoint(0, 0, 1)
         q = ClusterPoint(3, 4, 1)
-        self.assertEqual(ClusteringMeasures._dist(p, q), 5)
+        self.assertEqual(ClusteringMeasures.dist(p, q), 5)
 
     def test_dist_same_point_is_zero(self):
         """
         la distance d'un point a lui-meme est nulle.
         """
         p = ClusterPoint(2, 7, 1)
-        self.assertEqual(ClusteringMeasures._dist(p, p), 0)
+        self.assertEqual(ClusteringMeasures.dist(p, p), 0)
 
     def test_dist_is_symmetric(self):
         """
@@ -155,8 +145,8 @@ class TestClusteringMeasuresDistance(unittest.TestCase):
         """
         p = ClusterPoint(1, 2, 1)
         q = ClusterPoint(-4, 6, 2)
-        self.assertEqual(ClusteringMeasures._dist(p, q),
-                         ClusteringMeasures._dist(q, p))
+        self.assertEqual(ClusteringMeasures.dist(p, q),
+                         ClusteringMeasures.dist(q, p))
 
 
 # ---------------------------------------------------------------------------
