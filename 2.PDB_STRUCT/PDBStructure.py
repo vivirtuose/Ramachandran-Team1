@@ -125,7 +125,7 @@ class StructurePDB:
           p_c = self._get_atom_by_name(prev_aa, "C")
           if p_c and c_n and c_ca and c_c:
               phi_val = self.calculate_dihedrals(p_c, c_n, c_ca, c_c)
-              phi.append(phi_val)
+              
 
       # Calcul de PSI : N(i) - CA(i) - C(i) - N(i+1)
       if ires < len(self._residues) - 1:
@@ -133,11 +133,13 @@ class StructurePDB:
           n_n = self._get_atom_by_name(next_aa, "N")
           if c_n and c_ca and c_c and n_n:
               psi_val = self.calculate_dihedrals(c_n, c_ca, c_c, n_n)
-              psi.append(psi_val)
+              
 
       # Si les deux angles existent pour le résidu, on enregistre le point (phi, psi)
       if phi_val is not None and psi_val is not None:
           self._phipsi.append(Point(phi_val, psi_val))
+          phi.append(phi_val)
+          psi.append(psi_val)
 
     return phi, psi
 
@@ -148,20 +150,6 @@ class StructurePDB:
     with open(filename, 'w', encoding='utf-8') as out:
        out.writelines(f"{pt.x:.6f}\t{pt.y:.6f}\n" for pt in self._phipsi)
  
-    
-    
-#	public static void main(String[] args) throws FileNotFoundException{
-#		StructurePDB tey = new StructurePDB("D:/workspace/Enseignement/src/ramachandran/1TEY.pdb");
-#		tey.readPDBFile();
-#		tey.computeDihedrals();
-#		
-#		KMeans k4 = new KMeans(tey.phipsi,4);
-#		System.out.println(k4);
-#		k4.clusterize();
-#		System.out.println(k4);
-		
-#		k4.printOutput();
-#	}
 if __name__ == "__main__":
   iS = StructurePDB("1TEY.pdb")
   print(iS._residues[0])
