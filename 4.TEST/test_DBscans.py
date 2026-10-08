@@ -6,7 +6,7 @@ import random
 import unittest
 
 from Point import Point
-from clustering import Kmeans, Dbscan
+from clustering_DBscan import dbscan as Dbscan
 
 
 
@@ -31,16 +31,27 @@ def run_kmeans(points, k):
 
 def run_dbscan(points, epsilon, minpoints):
     """Construit un Dbscan, le lance, et renvoie la liste des clusters (sans le bruit)."""
-    db = Dbscan(points, epsilon, minpoints)
-    db.run()
-    return db.clusters
+    # dbscan wants plain [x, y] lists, not Point objects
+    lists = []
+    for p in points:
+        lists.append([p.x, p.y])
+    db = Dbscan(lists, epsilon, minpoints)
+    db.clustering()                    # the method is called clustering(), not run()
+    # liste_k contains indices: we turn them back into the original Point objects
+    result = []
+    for group in db.liste_k:
+        points_of_group = []
+        for i in group:
+            points_of_group.append(points[i])
+        result.append(points_of_group)
+    return result
 
 
 def coords_of(group):
     """Renvoie la liste triee des (x, y) d'un groupe de Point."""
     result = []
     for p in group:
-        result.append((p.get_abs(), p.get_ord()))
+        result.append((p.x, p.y))
     result.sort()
     return result
 
@@ -50,7 +61,7 @@ def all_coords(clusters):
     result = []
     for group in clusters:
         for p in group:
-            result.append((p.get_abs(), p.get_ord()))
+            result.append((p.x, p.y))
     result.sort()
     return result
 
@@ -61,6 +72,18 @@ def count_points(clusters):
     for group in clusters:
         total = total + len(group)
     return total
+
+
+def canonical(clusters):
+    """
+    Renvoie les clusters sous une forme comparable : une liste triee de groupes
+    tries. Ainsi l'ordre des groupes et leur numerotation n'ont pas d'importance.
+    """
+    result = []
+    for group in clusters:
+        result.append(coords_of(group))
+    result.sort()
+    return result
 
 
 # Deux blobs tres eloignes l'un de l'autre (utilises dans plusieurs tests)
