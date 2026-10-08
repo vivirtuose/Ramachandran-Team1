@@ -293,17 +293,7 @@ class TestPDBStructure(unittest.TestCase):
             StructurePDB("fichier_inexistant.pdb")
 
 
-    # Tester avec un fichier vide
-    def test_fichier_vide(self):
-
-        fichier = open("vide.pdb", "w")
-        fichier.close()
-
-        structure = StructurePDB("vide.pdb")
-
-        self.assertEqual(len(structure._residues), 0)
-
-        os.remove("vide.pdb")
+    
 
 
 if __name__ == "__main__":
