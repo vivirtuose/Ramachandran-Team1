@@ -36,14 +36,14 @@ class Test_Atom(unittest.TestCase):
         test si le getter de name rend une string.
         """
         f = Atom("N", 1, 0, 0)
-        self.assertIs(f.get_name(), str)
+        self.assertIs(f.name, str)
 
     def test_atom_getter_name_work(self):
         """
         Test si le getter de name rend bien l'attribut donnee.
         """
         f = Atom("N", 1, 0, 0)
-        self.assertEqual(f.get_name(), "N")
+        self.assertEqual(f.name, "N")
 
     #################
     #   GET_COORDS  #
@@ -53,41 +53,89 @@ class Test_Atom(unittest.TestCase):
         Test si le getter de coords rend bien une liste.
         """
         f = Atom("N", 1, 0, 0)
-        self.assertIs(f.get_coords(), list)  
+        self.assertIs(f.coords, list)  
 
     def test_atom_get_coords_return_list(self):
         """
         Test si le getter de coords rend bien des nombres.
         """
         f = Atom("N", 1, 0, 0)
-        self.assertTrue(all([ isinstance(n, (int, float)) for n in f.get_coords()]))      
+        self.assertTrue(all([ isinstance(n, (int, float)) for n in f.coords]))      
 
     def test_atom_get_coords_order(self):
         """
         Test si le getter de coords rend bien la liste de coordonnees dans l'ordre x, y, z.
         """
         f = Atom("N", 1, 2, 3)
-        self.assertEqual(f.get_coords(), [1, 2, 3]) 
+        self.assertEqual(f.coords, [1, 2, 3]) 
 
     #############
     #   GET_X   #
     #############
-    # tests des setters
-    def test_atom_setter_change_name(self):
+    def test_atom_get_x_number(self):
         """
-        test si le setter de name change le nom.
+        Test si le getter de x rend un nombre.
         """
         f = Atom("N", 1, 0, 0)
-        f.set_name("CA")
-        self.assertEqual(f.get_name(), "CA")
+        self.assertIsInstance(f.x, (int, float))
 
+    def test_atom_get_x_works(self):
+        """
+        Test si le getter de x rend le bon nombre.
+        """
+        f = Atom("N", 1, 2, 3)
+        self.assertEqual(f.x, 1)
+
+    #############
+    #   GET_Y   #
+    #############
+    def test_atom_get_y_number(self):
+        """
+        Test si le getter de y rend un nombre.
+        """
+        f = Atom("N", 1, 0, 0)
+        self.assertIsInstance(f.y, (int, float))
+
+    def test_atom_get_y_works(self):
+        """
+        Test si le getter de y rend le bon nombre.
+        """
+        f = Atom("N", 1, 2, 3)
+        self.assertEqual(f.y, 2)
+
+
+    #############
+    #   GET_Z   #
+    #############
+    def test_atom_get_z_number(self):
+        """
+        Test si le getter de z rend un nombre.
+        """
+        f = Atom("N", 1, 0, 0)
+        self.assertIsInstance(f.z, (int, float))
+
+    def test_atom_get_z_works(self):
+        """
+        Test si le getter de z rend le bon nombre.
+        """
+        f = Atom("N", 1, 2, 3)
+        self.assertEqual(f.z, 3)
+
+    #############
+    #   COPY    #
+    #############
+########################################################################################       
+
+   ############
+   # SET_NAME #
+   ############
     def test_atom_set_name_incorrect(self):
         """
         test si le setter de name accepte les nom incorrect.
         """
         f = Atom("N", 1, 0, 0)
         with self.assertRaises(ValueError):
-            f.set_name("X")
+            f.name = "X"
 
     def test_atom_set_name_modify_rest(self):
         """
@@ -95,16 +143,20 @@ class Test_Atom(unittest.TestCase):
         """
         f = Atom("N", 1, 0, 0)
         g = Atom("C", 1, 0, 0)
-        f.set_name("C")
+        f.name = "C"
         self.assertEqual(f, g)
+
+    ##############
+    # SET_COORDS #
+    ##############
 
     def test_atom_set_coords_works(self):
         """
         Test si le setter de coords modifie bien les coords.
         """
         f = Atom("N", 1, 0, 0)
-        f.set_coords(1, 2, 3)
-        self.assertEqual(f.get_coords(), [1, 2, 3]) 
+        f.coords = (1, 2, 3)
+        self.assertEqual(f.coords, [1, 2, 3]) 
 
     def test_atom_set_coords_incorrect(self):
         """
@@ -112,9 +164,10 @@ class Test_Atom(unittest.TestCase):
         """      
         f = Atom("N", 1, 0, 0)
         with self.assertRaises(ValueError):
-            f.set_coords('a', 'b', 'c')   
-
-    # Tests de la methode str
+            f.coords = ('a', 'b', 'c')   
+    ############
+    #   STR    #
+    ############
     def test_str_0(self):
         """
         Test que la class Atom peut rendre un str.
@@ -143,7 +196,9 @@ class Test_Atom(unittest.TestCase):
         f = Atom("C", -3, -4, -2)
         self.assertEqual(str(f), "C (-3.00, -4.00, -2.00)")
 
-    #  Tests de la methode norm.
+    #############
+    #   NORM    #
+    #############
     def test_norm_0(self):
         f = Atom("N", 0, 0, 0)
         self.assertEqual(f.norm(), 0)
@@ -158,36 +213,65 @@ class Test_Atom(unittest.TestCase):
 
     def test_norm_neg1(self):
         f = Atom("N", -1.115, 8.537, 7.075)
-        self.assertEqual(f.norm(), 11.143572990742243)
+        self.assertAlmostEqual(f.norm(), 11.143572990742243)
 
     def test_norm_neg1(self):
         f = Atom("CA", -1.925, 7.470, 6.547)
-        self.assertEqual(f.norm(), 10.117792941150752)
+        self.assertAlmostEqual(f.norm(), 10.117792941150752)
 
     def test_norm_pos(self):
         f = Atom("N", 1, 2, 3)
-        self.assertEqual(f.norm(), round(math.sqrt(14), 15))
-    
-    # Tests de la methode distance
+        self.assertAlmostEqual(f.norm(), round(math.sqrt(14), 15))
+
+    #################
+    #   DISTANCE    #
+    #################
     def test_distance_work(self):
         f = Atom("N", -1.115, 8.537, 7.075)
         g = Atom("CA", -1.925, 7.470, 6.547)
         result = f.distance(g)
-        self.assertEqual(result, 1.4399211783983188)
+        self.assertAlmostEqual(result, 1.4399211783983188)
 
-    # Tests de la methode substract
+    #################
+    #   SUBSTRACT   #
+    #################
+    def test_substract_return_type(self):
+        """
+        Tests si la methode substract de la class Atom rend bien un Atom.
+        """
+        f = Atom("N", 1, 0, 2)
+        g = Atom("N", 2, 1, 0)
+        result = f.substract(g)
+        self.assertIsInstance(result, Atom)
+
+    def test_substract_returns_name(self):
+        """
+        Test si la methode cross_porduct renvoie un Atom sans nom.
+        """
+        f = Atom("N", 1, 0, 2)
+        g = Atom("N", 2, 1, 0)
+        result = f.substract(g)
+        self.assertEqual(result.name, "")
+
     def test_substract_work(self):
         f = Atom("N", -1.115, 8.537, 7.075)
         g = Atom("CA", -1.925, 7.470, 6.547)
         result = f.substract(g)
-        self.assertEqual(result.get_coords(), ( 0.81, 1.07, 0.53))
+        result_value = [ round(n, 2) for n in result.coords] 
+        self.assertEqual(result_value, [0.81, 1.07, 0.53])
 
-    # Tests de la methode dot_product
-    f = Atom("N", -1.115, 8.537, 7.075)
-    g = Atom("CA", -1.925, 7.470, 6.547)
-    112.23779
+    ####################
+    #   DOT_PRODUCT    #
+    ####################
+####################################################################
 
-    # Tests de la methode cross_product
+    # f = Atom("N", -1.115, 8.537, 7.075)
+    # g = Atom("CA", -1.925, 7.470, 6.547)
+    # 112.23779
+
+    #######################
+    #   CROSS _PRODUCT    #
+    #######################
     # https://www.dcode.fr/produit-vectoriel
     def test_cross_product_return_type(self):
         """
@@ -205,7 +289,7 @@ class Test_Atom(unittest.TestCase):
         f = Atom("N", 1, 0, 2)
         g = Atom("N", 2, 1, 0)
         result = f.cross_product(g)
-        self.assertEqual(result.get_name(), "")
+        self.assertEqual(result.name, "")
 
     def test_cross_product_return_type_inside(self):
         """
@@ -214,7 +298,7 @@ class Test_Atom(unittest.TestCase):
         f = Atom("N", 1, 0, 2)
         g = Atom("N", 2, 1, 0)
         result = f.cross_product(g)
-        list_bool = [type(number) == float for number in result.get_coords()]
+        list_bool = [type(number) == float or type(number) == int for number in result.coords]
         self.assertTrue(all(list_bool))
 
     def test_cross_product_work(self):
@@ -224,10 +308,11 @@ class Test_Atom(unittest.TestCase):
         f = Atom("N", 1, 0, 2)
         g = Atom("N", 2, 1, 0)
         result = f.cross_product(g)
-        self.assertEqual(result.get_coords(), (-2, 4, 1))
+        self.assertEqual(result.coords, [-2, 4, 1])
     
-
-    # Tests de la methode angle
+    #############
+    #   ANGLE   #
+    #############
     def test_angle_return_float(self):
         """
         Test si la methode angle rend bien un float.
@@ -243,11 +328,13 @@ class Test_Atom(unittest.TestCase):
         """
         f = Atom("N", -1.115, 8.537, 7.075)
         g = Atom("CA", -1.925, 7.470, 6.547)
-        self.assertEqual(f.angle(g), 0.09520358627719255)
+        self.assertAlmostEqual(f.angle(g), 0.09520358627719255)
 
     
-
-    # tests de la methode dihedral
+    #################
+    #   DIHEDRAL    #
+    #################
+#########################################################################    
 
 if __name__ == "__main__":
     unittest.main()

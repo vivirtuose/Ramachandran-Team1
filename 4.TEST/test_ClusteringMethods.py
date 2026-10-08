@@ -6,7 +6,8 @@ import inspect
 import unittest
 
 from Point import Point
-from clustering import ClusteringMethods, Kmeans, Dbscan
+from clustering import ClusteringMethods, Kmeans
+from clustering import dbscan as Dbscan
 
 
 # ---------------------------------------------------------------------------
@@ -27,6 +28,31 @@ def count_points(clusters):
     for group in clusters:
         total = total + len(group)
     return total
+
+
+def make_lists(coordinates):
+    """
+    Transforme une liste de tuples (x, y) en liste de listes [x, y].
+    La classe dbscan travaille avec des listes [x, y] et pas avec des Point.
+    """
+    lists = []
+    for (x, y) in coordinates:
+        lists.append([x, y])
+    return lists
+
+
+def run_method(method):
+    """
+    Lance le clustering d'un Kmeans (methode run) ou d'un dbscan (methode
+    clustering) et renvoie la liste des groupes. Les deux classes n'ont pas le meme
+    nom de methode ni le meme format de resultat : Kmeans range des Point dans un
+    dictionnaire, dbscan range des numeros de points dans une liste.
+    """
+    if isinstance(method, Kmeans):
+        method.run()
+        return list(method.liste_k.values())
+    method.clustering()
+    return method.liste_k
 
 
 # Deux blobs tres eloignes l'un de l'autre (utilises dans plusieurs tests)
@@ -84,7 +110,7 @@ class TestClusteringMethodsInheritance(unittest.TestCase):
         """
         self.points = make_points(BLOB_A + BLOB_B)
         self.km = Kmeans(self.points, 2)
-        self.db = Dbscan(self.points, 2, 3)
+        self.db = Dbscan(make_lists(BLOB_A + BLOB_B), 2, 3)
 
     def test_kmeans_is_subclass(self):
         """
@@ -140,12 +166,14 @@ class TestClusteringMethodsCommonInterface(unittest.TestCase):
         liste pour pouvoir faire la meme verification sur les deux avec une boucle.
         """
         self.points = make_points(BLOB_A + BLOB_B)
-        self.methods = [Kmeans(self.points, 2), Dbscan(self.points, 2, 3)]
+        self.methods = [Kmeans(self.points, 2),
+                        Dbscan(make_lists(BLOB_A + BLOB_B), 2, 3)]
 
     def test_both_have_run_method(self):
         """
         l'interet de la classe mere est que toutes les filles aient la
-        meme methode run(). On verifie que Kmeans et Dbscan en ont une.
+        meme methode run() (elle est declaree abstraite dans ClusteringMethods).
+        On verifie que Kmeans et dbscan en ont une.
         """
         for method in self.methods:
             self.assertTrue(hasattr(method, "run"))
@@ -158,19 +186,19 @@ class TestClusteringMethodsCommonInterface(unittest.TestCase):
         gardee, avec le meme nombre de points.
         """
         for method in self.methods:
-            self.assertEqual(len(method.points), len(self.points))
+            self.assertEqual(len(method.liste_point), len(self.points))
 
     def test_both_give_clusters_as_list_of_lists(self):
         """
-        apres run(), les deux methodes doivent donner leur resultat dans
-        .clusters, sous la forme d'une liste de listes. Les autres classes
-        (ClusterPoint, ClusteringMeasures, sortie fichier) comptent sur ce
-        format commun.
+        apres le clustering, les deux methodes doivent donner leur resultat
+        sous la forme d'une liste de listes (grace a run_method, qui range le
+        dictionnaire de Kmeans en liste). Les autres classes (ClusteringMeasures,
+        sortie fichier) comptent sur ce format commun.
         """
         for method in self.methods:
-            method.run()
-            self.assertIsInstance(method.clusters, list)
-            for group in method.clusters:
+            groups = run_method(method)
+            self.assertIsInstance(groups, list)
+            for group in groups:
                 self.assertIsInstance(group, list)
 
     def test_both_never_return_more_points_than_given(self):
@@ -180,8 +208,8 @@ class TestClusteringMethodsCommonInterface(unittest.TestCase):
         le bruit peut faire qu'on en recoit moins, mais jamais plus.
         """
         for method in self.methods:
-            method.run()
-            self.assertLessEqual(count_points(method.clusters), len(self.points))
+            groups = run_method(method)
+            self.assertLessEqual(count_points(groups), len(self.points))
 
     def test_both_find_two_groups_on_two_far_blobs(self):
         """
@@ -190,8 +218,8 @@ class TestClusteringMethodsCommonInterface(unittest.TestCase):
         groupes, ce qui montre que l'interface commune fonctionne.
         """
         for method in self.methods:
-            method.run()
-            self.assertEqual(len(method.clusters), 2)
+            groups = run_method(method)
+            self.assertEqual(len(groups), 2)
 
 
 if __name__ == "__main__":
