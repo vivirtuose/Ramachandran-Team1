@@ -6,7 +6,7 @@ import random
 import unittest
 
 from Point import Point
-from clustering_KMeans import Kmeans
+from clustering import Kmeans
 
 
 # ---------------------------------------------------------------------------
@@ -24,7 +24,7 @@ def make_points(coordinates):
 def run_kmeans(points, k):
     """Construit un Kmeans, le lance, et renvoie la liste des groupes."""
     km = Kmeans(points, k)
-    km.clusterize()                    # the method is called clusterize(), not run()
+    km.run()
     return list(km.liste_k.values())   # liste_k is a dict {cluster number: points}
 
 

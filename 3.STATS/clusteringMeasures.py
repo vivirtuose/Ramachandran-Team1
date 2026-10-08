@@ -50,23 +50,21 @@ class ClusteringMeasures() :
         Lecture d'un fichier pour stocker le contenu dans une liste.
         """
         points = []
-        with open(path, encoding = "utf-8") as fh :
-            for line in  fh.read().splitlines() : 
+        with open(path, encoding="utf-8") as fh:
+            for line in fh.read().splitlines():
+                if line.strip() == "" or line.startswith("phi"):   # S'il y a une ligne vide ou en-tête
+                    continue
+
                 phi, psi, cluster = line.split("\t")
                 points.append(ClusterPoint(float(phi), float(psi), int(cluster)))
-
-        return points
     
     @staticmethod
-    def dist(p, q) -> float :
+    def dist(p, q) -> float:
         """
-        Implémentation de la distance euclidienne qu'on utilisera par défaut.
-        On pourra la modifier ici pour par exemple faire une distance de Manhattan.
-        On pourrait aussi utiliser le module math pour avoir quelque chose de plus simple mais
-        l'avantage ici est qu'on a directement le détail de la formule.
+        Réutilisation de la méthode dans la classe Point.
         """
-        return ((p.x - q.x) ** 2 + (p.y - q.y) ** 2) ** 0.5
-
+        return p.euclidean_distance(q)
+    
     def order_cluster(self) -> dict :
         """
         Ordonne les points selon le cluster auquel ils sont associés.
@@ -77,25 +75,53 @@ class ClusteringMeasures() :
         """
         groups = {}
         for p in self.cluster_point_list:
-            if p.cluster not in groups:   
-                groups[p.cluster] = []  
+            if p.nb_cluster not in groups:   
+                groups[p.nb_cluster] = []  
 
-            groups[p.cluster].append(p)
+            groups[p.nb_cluster].append(p)
 
         return groups
 
-    def a(self, p, cluster: list) -> float:
+    def a(self, p: list) -> float :
         """
         Distance moyenne entre p et les autres points de son cluster (cohésion).
         """
+        groups = self.order_cluster()
+        cluster = groups[p.nb_cluster]
+
         if len(cluster) == 1:
-            return 0.0 # p n'a pas de voisin donc on évite la division par 0
+            return 0.0
 
         total = 0
         for q in cluster:
             if q is not p:
-                total += self._dist(p, q)
+                total += self.dist(p, q)
 
         return total / (len(cluster) - 1)
 
+    def mean_distance(self, p, cluster) :
+        """
+        Distance moyenne entre p et tous les points d'un cluster.
+        """
+        total = 0
+        for q in cluster:
+            total += self.dist(p, q)
+
+        return total / len(cluster)
+
+    def b(self, p) :
+        """
+        b(i) : plus petite distance moyenne entre p et un autre cluster.
+        """
+        groups = self.order_cluster()
+        best = None
+
+        for k in groups :
+            if k != p.nb_cluster :                               
+                mean = self.mean_distance(p, groups[k])
+
+                if best is None or mean < best :
+                    best = mean
+
+        return best
     

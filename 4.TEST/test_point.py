@@ -10,16 +10,16 @@ class Test_Point(unittest.TestCase):
     Vérification de l'initialisation par défaut (0.0, 0.0)
     """
     p = Point()
-    self.assertAlmostEqual(p.get_abs(), 0.0)
-    self.assertAlmostEqual(p.get_ord(), 0.0)
+    self.assertAlmostEqual(p.x, 0.0)
+    self.assertAlmostEqual(p.y, 0.0)
 
   def test_init_values(self):
     """
     Vérification de l'initialisation avec des coordonnées
     """
-    p = Point(3.5, -2,1)
-    self.assertAlmostEqual(p.get_abs(), 3.5)
-    self.assertAlmostEqual(p.get_ord(), -2.1)
+    p = Point(3.5, -2.1)
+    self.assertAlmostEqual(p.x, 3.5)
+    self.assertAlmostEqual(p.y, -2.1)
 
   def test_init_invalid_types(self):
     """
@@ -45,8 +45,8 @@ class Test_Point(unittest.TestCase):
     p1 = Point(1.5, 2.5)
     p2 = Point(3.0, -1.0)
     p1.add(p2)
-    self.assertAlmostEqual(p1.get_abs(), 4.5)
-    self.assertAlmostEqual(p1.get_ord(), 1.5)
+    self.assertAlmostEqual(p1.x, 4.5)
+    self.assertAlmostEqual(p1.y, 1.5)
 
   def test_add_invalid_argument(self):
     """
@@ -65,7 +65,7 @@ class Test_Point(unittest.TestCase):
     """
     p = Point(1, -2)
     p.rescale(3)
-    self.assertEqual((p.get_abs(), p.get_ord()), (3, -6))
+    self.assertEqual((p.x, p.y), (3, -6))
 
   def test_rescale_zero_factor(self):
     """
@@ -73,8 +73,8 @@ class Test_Point(unittest.TestCase):
     """
     p = Point(4.0, 5.0)
     p.rescale(0)
-    self.assertAlmostEqual(p.get_abs(), 0.0)
-    self.assertAlmostEqual(p.get_ord(), 0.0)
+    self.assertAlmostEqual(p.x, 0.0)
+    self.assertAlmostEqual(p.y, 0.0)
 
   def test_rescale_invalid_factor(self):
     """

@@ -166,11 +166,11 @@ class Atom:
         return acos(self.dot_product(another_atom)/(self.norm()*another_atom.norm()))
 
 
-    def dihedral(self, a1, a2, a3, a4):
+    def dihedral(self, a2, a3, a4):
         """
         Function that computes dihedral angle (torsion angle) between 4 atoms named a1 to a4
         """
-        if not isinstance(a1,Atom) or not isinstance(a2,Atom) or not isinstance(a3,Atom) or not isinstance(a4,Atom):
+        if not isinstance(self,Atom) or not isinstance(a2,Atom) or not isinstance(a3,Atom) or not isinstance(a4,Atom):
             raise ValueError(f"All parameters must be Atoms")
         b1 = a2.substract(self)
         b2 = a3.substract(a2)
@@ -188,37 +188,36 @@ class Atom:
 
 
 
-        
 if __name__ == "__main__":	
-  print("Testing Class Atom")
-  atom1 = Atom("H",18.0,9.5,192.5)
-  atom2 = Atom("C",18.0,9.5,0)
-  atom3 = Atom("O",0,0,1)
-    
-  print(atom1.dot_product(atom2))
-  print(atom2)
-  print(atom3.distance(atom2))
+    print("Testing Class Atom")
+    atom1 = Atom("H",18.0,9.5,192.5)
+    atom2 = Atom("C",18.0,9.5,0)
+    atom3 = Atom("O",0,0,1)
+            
+    print(atom1.dot_product(atom2))
+    print(atom2)
+    print(atom3.distance(atom2))
 
-atom4=Atom()
-atom1.copy(atom4)
-print(atom1.compare(atom4))
-print(atom4)
+    #atom4=Atom()
+    #atom1.copy(atom4)
+    #print(atom1.compare(atom4))
+    #print(atom4)
 
-atom5=Atom("C",17.0,9.5,100.0)
-atom6=Atom("H",0,5.0,140.0)
-print(atom1.dihedral(atom2,atom3,atom5,atom6))
+    atom5=Atom("C",17.0,9.5,100.0)
+    atom6=Atom("H",0,5.0,140.0)
+    print(atom1.dihedral(atom2,atom3,atom5))
 
 
-#test avec PDB
-print("test PDB")
-atomN=Atom("N",-1.115,8.537,7.075)
-atomCA=Atom("CA",-1.925,7.47,6.547)
-print(atomN)
-print(atomCA)
-print(atomN.norm())
-print(atomCA.norm())
-print(atomN.distance(atomCA))
-print(atomN.substract(atomCA))
-print(atomN.dot_product(atomCA))
-print(atomN.cross_product(atomCA))
-print(atomN.angle(atomCA))
+    #test avec PDB
+    print("test PDB")
+    atomN=Atom("N",-1.115,8.537,7.075)
+    atomCA=Atom("CA",-1.925,7.47,6.547)
+    print(atomN)
+    print(atomCA)
+    print(atomN.norm())
+    print(atomCA.norm())
+    print(atomN.distance(atomCA))
+    print(atomN.substract(atomCA))
+    print(atomN.dot_product(atomCA))
+    print(atomN.cross_product(atomCA))
+    print(atomN.angle(atomCA))

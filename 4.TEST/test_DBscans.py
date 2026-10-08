@@ -6,7 +6,7 @@ import random
 import unittest
 
 from Point import Point
-from clustering_DBscan import dbscan as Dbscan
+from clustering import dbscan as Dbscan
 
 
 
