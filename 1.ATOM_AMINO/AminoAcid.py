@@ -13,7 +13,7 @@ class AminoAcid :
 
   @property
   def res_number(self) : 
-    return self._res_numbera
+    return self._res_number
 
   @res_number.setter 
   def res_number(self, res_number) : 
@@ -81,13 +81,16 @@ class AminoAcid :
     return(next(atom for atom in self.atoms if atom.name == "O")) 
 
   
-  def is_angle_diedre(self) : 
+  def angle_diedre(self) : 
     """
     
     """
-    for atom in self.atoms : 
-      if atom + 3 <= len(self.atoms) : 
-        atom.dihedral(atom + 1, atom + 2, atom + 3)  
+    angle = []
+    for i, atom in enumerate(self.atoms) : 
+      if i + 3 < len(self.atoms) : 
+        angle.append(atom.dihedral(self.atoms[i + 1], self.atoms[i + 2], self.atoms[i + 3]))
+    
+    return angle      
 
 
 
@@ -98,10 +101,10 @@ if __name__ == "__main__" :
   atom4 = Atom.Atom("CA", 0, 0, 1)
   atom5 = Atom.Atom("D", 0, 0, 1)
   a1 = AminoAcid(1, "MET", [atom1, atom2, atom3, atom4])
-  print(a1)
-  print(a1.C)
-  print(a1.CA)
-  print(a1.N)
-  print(a1.O)
+  # print(a1)
+  # print(a1.C)
+  # print(a1.CA)
+  # print(a1.N)
+  # print(a1.O)
   # a1.add(atom5)
-  print(a1.is_angle_diedre)
+  print(a1.angle_diedre())
