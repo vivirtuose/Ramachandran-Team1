@@ -55,6 +55,12 @@ class ClusteringMeasures() :
     
     @staticmethod
     def _dist(p, q) -> float :
+        """
+        Implémentation de la distance euclidienne qu'on utilisera par défaut.
+        On pourra la modifier ici pour par exemple faire une distance de Manhattan.
+        On pourrait aussi utiliser le module math pour avoir quelque chose de plus simple mais
+        l'avantage ici est qu'on a directement le détail de la formule.
+        """
         return ((p.x - q.x) ** 2 + (p.y - q.y) ** 2) ** 0.5
 
 
