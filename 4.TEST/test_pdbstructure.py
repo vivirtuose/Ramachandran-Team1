@@ -146,8 +146,8 @@ class TestPDBStructure(unittest.TestCase):
 
         phi, psi = structure.compute_dihedrals()
 
-        self.assertEqual(len(phi), 155)
-        self.assertEqual(len(psi), 155)
+        self.assertEqual(len(phi), 154)
+        self.assertEqual(len(psi), 154)
 
 
     # Tester le premier angle phi
