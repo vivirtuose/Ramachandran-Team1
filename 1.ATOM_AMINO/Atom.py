@@ -8,12 +8,31 @@ from math import sqrt
 from math import acos
 from math import atan2
 
+
+def check_number(value):
+    """
+    Function that checks that a coordinate is a number (int or float) and returns it
+    """
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"{value!r} must be a number")
+    return value
+
+
+def check_name(value):
+    """
+    Function that checks that the name of an atom is a string and returns it
+    """
+    if not isinstance(value, str):
+        raise ValueError(f"{value!r} must be a string")
+    return value
+
+
 class Atom:
     def __init__(self, name="X", px = 0.00, py = 0.00, pz = 0.00):
-      self._name = name
-      self._x = px
-      self._y = py  
-      self._z = pz
+      self._name = check_name(name)
+      self._x = check_number(px)
+      self._y = check_number(py)
+      self._z = check_number(pz)
     
     @property #name
     def name(self):
@@ -27,7 +46,7 @@ class Atom:
         """
         Function that modifies the name
         """
-        self._name = pname
+        self._name = check_name(pname)
     
     @property #coordinate
     def coords(self):
@@ -41,7 +60,10 @@ class Atom:
         """
         Function that modifies the attributes x, y, z
         """
-        self._x,self._y,self._z = values
+        px, py, pz = values
+        self._x = check_number(px)
+        self._y = check_number(py)
+        self._z = check_number(pz)
 
 
     @property  #x coordinate
@@ -56,7 +78,7 @@ class Atom:
         """
         Function that modifies the x coordinate
         """
-        self._x=px
+        self._x=check_number(px)
 
         
     @property #y coordinate
@@ -71,7 +93,7 @@ class Atom:
        """
         Function that modifies the y coordinate
         """
-       self._y=py
+       self._y=check_number(py)
 
     
     @property #z coordinate
@@ -86,7 +108,7 @@ class Atom:
         """
         Function that modifies the z coordinate
         """
-        self._z=pz
+        self._z=check_number(pz)
 
 
     def copy(self, another_atom):

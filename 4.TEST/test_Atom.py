@@ -33,7 +33,7 @@ class Test_Atom(unittest.TestCase):
         Test que le constructeur n'accepte pas de nom impossible.
         """
         with self.assertRaises(ValueError):
-            f = Atom("X", 1, 0, 0)
+            f = Atom(5, 1, 0, 0)
 
     def test_atom_innit_coords_incorrect(self):
         """
@@ -195,7 +195,7 @@ class Test_Atom(unittest.TestCase):
         """
         f = Atom("N", 1, 0, 0)
         with self.assertRaises(ValueError):
-            f.name = "X"
+            f.name = 5
 
     def test_atom_set_name_modify_rest(self):
         """
