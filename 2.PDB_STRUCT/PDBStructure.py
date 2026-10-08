@@ -14,6 +14,7 @@ class StructurePDB:
     self.path_to_file = filename
     self.residues = []
     self.phipsi = [] #Liste d'objets Point (phi, psi)
+    #On déclare ici tous les attributs de la classe dès sa création même si on ne s'en sert que dans compute_dihedrals
 
     previous_res_num = None
 
@@ -99,28 +100,46 @@ class StructurePDB:
     phi = [] # list of floats
     psi = [] # list of floats
     self.phipsi = [] # list of Points (class Point...)
+    #On réinitialise compute_dihedrals
 
     for ires in range(len(self.residues)):
       current_aa = self.residues[ires]
-      for iaa in range(len(current_aa)):
-        list_atoms = current_aa[iaa].atom
 
-    #On parcours les atomes de chaque aa
-    for iat in range(len(list_atoms)-1):
-      if list_atoms[iat].name == "N"and list_atoms[iat].name == "CA":
-        pass
-      #calcul angle phi
+      # Récupération des atomes du résidu courant
+      c_n = self._get_atom_by_name(current_aa, "N")
+      c_ca = self._get_atom_by_name(current_aa, "CA")
+      c_c = self._get_atom_by_name(current_aa, "C")
 
-    phi.append(0.00)
-    
-    aa = self.residues[0]
+      phi_val = None
+      psi_val = None
+
+      # Calcul de PHI : C(i-1) - N(i) - CA(i) - C(i)
+      if ires > 0:
+          prev_aa = self.residues[ires - 1]
+          p_c = self._get_atom_by_name(prev_aa, "C")
+          if p_c and c_n and c_ca and c_c:
+              phi_val = self.calculate_dihedral(p_c, c_n, c_ca, c_c)
+
+      # Calcul de PSI : N(i) - CA(i) - C(i) - N(i+1)
+      if ires < len(self.residues) - 1:
+          next_aa = self.residues[ires + 1]
+          n_n = self._get_atom_by_name(next_aa, "N")
+          if c_n and c_ca and c_c and n_n:
+              psi_val = self.calculate_dihedral(c_n, c_ca, c_c, n_n)
+
+      # Si les deux angles existent pour le résidu, on enregistre le point (phi, psi)
+      if phi_val is not None and psi_val is not None:
+          self.phipsi.append(Point(phi_val, psi_val))
    
 
 
   def write_dihedrals(self, filename):
     """
-    Functions that writes a file with 2 columns phi and psi separated by a tabulation, with one line per residue. Values of phi and psi angles are given with a precision of 6 decimals.
+    Écrit les angles phi et psi (en radians) séparés par une tabulation dans un fichier.
     """
+    with open(filename, 'w', encoding='utf-8') as out:
+       for pt in self.phipsi:
+          out.write(f"{pt.abs:.6f}\t{pt.ord:.6f}\n")
  
     
     
@@ -136,9 +155,10 @@ class StructurePDB:
 		
 #		k4.printOutput();
 #	}
-iS = StructurePDB("1TEY.pdb")
-print(iS.residues[0])
-print(iS.residues[1])
-print(iS.residues[2])
-iS.compute_dihedrals()
-iS.write_dihedrals("angles_1TEY.txt")
+if __name__ == "__main__":
+  iS = StructurePDB("1TEY.pdb")
+  print(iS.residues[0])
+  print(iS.residues[1])
+  print(iS.residues[2])
+  iS.compute_dihedrals()
+  iS.write_dihedrals("angles_1TEY.txt")

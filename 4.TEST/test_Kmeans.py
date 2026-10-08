@@ -6,7 +6,7 @@ import random
 import unittest
 
 from Point import Point
-from clustering import Kmeans, Dbscan
+from clustering_KMeans import Kmeans
 
 
 # ---------------------------------------------------------------------------
@@ -24,8 +24,8 @@ def make_points(coordinates):
 def run_kmeans(points, k):
     """Construit un Kmeans, le lance, et renvoie la liste des groupes."""
     km = Kmeans(points, k)
-    km.run()
-    return km.clusters
+    km.clusterize()                    # the method is called clusterize(), not run()
+    return list(km.liste_k.values())   # liste_k is a dict {cluster number: points}
 
 
 def run_dbscan(points, epsilon, minpoints):
@@ -39,7 +39,7 @@ def coords_of(group):
     """Renvoie la liste triee des (x, y) d'un groupe de Point."""
     result = []
     for p in group:
-        result.append((p.get_abs(), p.get_ord()))
+        result.append((p.x, p.y))
     result.sort()
     return result
 
@@ -49,7 +49,7 @@ def all_coords(clusters):
     result = []
     for group in clusters:
         for p in group:
-            result.append((p.get_abs(), p.get_ord()))
+            result.append((p.x, p.y))
     result.sort()
     return result
 
@@ -60,6 +60,18 @@ def count_points(clusters):
     for group in clusters:
         total = total + len(group)
     return total
+
+
+def canonical(clusters):
+    """
+    Renvoie les clusters sous une forme comparable : une liste triee de groupes
+    tries. Ainsi l'ordre des groupes et leur numerotation n'ont pas d'importance.
+    """
+    result = []
+    for group in clusters:
+        result.append(coords_of(group))
+    result.sort()
+    return result
 
 
 # Deux blobs tres eloignes l'un de l'autre (utilises dans plusieurs tests)
