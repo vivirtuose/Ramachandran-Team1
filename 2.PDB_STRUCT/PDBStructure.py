@@ -52,7 +52,7 @@ class StructurePDB:
 
       #Détection d'un nouveau résidu 
       if residue_num != previous_res_num:
-          aa = AminoAcid(residue_num, residue_type, [])
+          aa = AminoAcid(residue_num, residue_type)
           self._residues.append(aa) #on ajoute un objet AminoAcid à la liste de résidus, avec le type de résidu et une liste vide qui contiendra les atomes et leurs coordonnées
           previous_res_num = residue_num
 

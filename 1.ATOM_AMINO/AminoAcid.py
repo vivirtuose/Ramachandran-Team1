@@ -2,10 +2,10 @@ import Atom
 
 class AminoAcid : 
 
-  def __init__(self, res_number, res_type, list_atoms = []):
+  def __init__(self, res_number, res_type):
     self._res_number = res_number
     self._res_type = res_type
-    self._atoms = list_atoms 
+    self._atoms = []
 
     if len(self._res_type) != 3 : 
       raise ValueError
@@ -100,11 +100,30 @@ if __name__ == "__main__" :
   atom3 = Atom.Atom("O",0,0,1)
   atom4 = Atom.Atom("CA", 0, 0, 1)
   atom5 = Atom.Atom("D", 0, 0, 1)
-  a1 = AminoAcid(1, "MET", [atom1, atom2, atom3, atom4])
-  # print(a1)
-  # print(a1.C)
-  # print(a1.CA)
-  # print(a1.N)
-  # print(a1.O)
+  a1 = AminoAcid(1, "MET")
+  a1.add(atom1)
+  a1.add(atom2)
+  a1.add(atom3)
+  a1.add(atom4)
+  print(a1)
+  print(a1.C)
+  print(a1.CA)
+  print(a1.N)
+  print(a1.O)
   # a1.add(atom5)
   print(a1.angle_diedre())
+
+  # a1 = Atom.Atom("N", 1, 0, 0)
+  # a2 = Atom.Atom("CA",-1.93, 7.47, 6.55)
+  # a3 = Atom.Atom("O", 1.5, 5, 3.2)
+  # a4 = Atom.Atom("C", 3, 0, 2)
+
+  # AA = AminoAcid(1, "SER")
+         
+  
+  # AA.add(a1)
+  # AA.add(a2)
+  # AA.add(a3)
+  # AA.add(a4)
+
+  # print(AA.angle_diedre())
