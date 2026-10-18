@@ -63,7 +63,7 @@ class ClusteringMethods(ABC):
         liste = []
         for key in self.liste_k:
             for point in self.liste_k[key]:
-                liste.append(ClusterPoint(point.get_abs(), point.get_ord(), key))
+                liste.append(ClusterPoint(point.x, point.y, key))
         return liste
 
     def create_tsv(self, filename):
@@ -72,7 +72,7 @@ class ClusteringMethods(ABC):
             for p in self.convert_in_clusterPoint():
                 file.write(
                     "{:.6f}\t{:.6f}\t{}\n".format(
-                        p.get_abs(), p.get_ord(), p.nb_cluster
+                        p.x, p.y, p.nb_cluster
                     )
                 )
 
